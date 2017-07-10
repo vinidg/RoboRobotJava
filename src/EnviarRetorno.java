@@ -4,6 +4,7 @@ import java.awt.Robot;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
@@ -17,7 +18,7 @@ import java.util.TimerTask;
 
 public class EnviarRetorno {
 	private static String dataRemessa = "";
-	
+
 	AcessarSistema sistema = new AcessarSistema();
 	Calendar c = Calendar.getInstance();
 	Date data = c.getTime();
@@ -30,7 +31,10 @@ public class EnviarRetorno {
 				dataRemessa = f.format(data);
 				try {
 					sistema.sistemas(dataRemessa);
-				} catch (InterruptedException | IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException | IOException | AWTException | ParseException e) {
+				} catch (InterruptedException | IllegalArgumentException | IllegalAccessException | NoSuchFieldException
+						| SecurityException | IOException | AWTException | ParseException e) {
+					e.printStackTrace();
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -48,6 +52,7 @@ public class EnviarRetorno {
 
 		if (!dataRemessa.isEmpty()) {
 			try {
+				@SuppressWarnings("unused")
 				Date dataValida = sdf.parse(dataRemessa);
 				try {
 					sistema.sistemas(dataRemessa);
@@ -62,26 +67,27 @@ public class EnviarRetorno {
 
 		timer.cancel();
 	}
-	
+
 	public static void main(String[] args) throws IOException, InterruptedException, AWTException,
 			IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
-		
+		CriarLog criarLog = new CriarLog();
 		try {
 			(new EnviarRetorno()).getInputData();
 		} catch (Exception e) {
 			System.out.println(e);
+			criarLog.GerarLog("==== Sem boleto ====");
 		}
 	}
 
 	public static class AcessarSistema {
-		public void sistemas(String dataRemessa) throws IOException, InterruptedException, AWTException, IllegalArgumentException,
-				IllegalAccessException, NoSuchFieldException, SecurityException, ParseException {
-
+		public void sistemas(String dataRemessa) throws Exception {
+			
+			CriarLog criarLog = new CriarLog();
 			Process process = null;
 			Robot celso = new Robot();
 			Runtime runTime = Runtime.getRuntime();
 			celso.setAutoDelay(500);
-			
+
 			try {
 
 				System.out.println("==== Abrindo área de trabalho remota ====");
@@ -102,6 +108,7 @@ public class EnviarRetorno {
 					celso.mouseRelease(InputEvent.BUTTON1_MASK);
 
 					Color corAlvo = new Color(254, 255, 0);
+					Color corParar = new Color(9, 26, 70);
 					for (int y = 0; y <= 700; y++) {
 						Color cor = celso.getPixelColor(46, y);
 						if (cor.getRGB() == corAlvo.getRGB()) {
@@ -110,10 +117,13 @@ public class EnviarRetorno {
 							celso.mouseRelease(InputEvent.BUTTON1_MASK);
 							celso.keyPress(KeyEvent.VK_ENTER);
 							celso.keyRelease(KeyEvent.VK_ENTER);
-
 							break;
-						} else if (y == 700) {
+						} else if (cor.getRGB() == corParar.getRGB()) {
+							break;
+						}
+						if (y == 700) {
 							System.out.println("\n==== Icone não encontrado ====");
+							criarLog.GerarLog("==== Icone não encontrado ====");
 							process.destroy();
 							return;
 						}
@@ -150,58 +160,115 @@ public class EnviarRetorno {
 				celso.mouseMove(764, 114);
 				celso.mousePress(InputEvent.BUTTON1_MASK);
 				celso.mouseRelease(InputEvent.BUTTON1_MASK);
-				
+
 				celso.mouseMove(73, 105);
 				celso.mousePress(InputEvent.BUTTON1_MASK);
 				celso.mouseRelease(InputEvent.BUTTON1_MASK);
 				celso.mousePress(InputEvent.BUTTON1_MASK);
 				celso.mouseRelease(InputEvent.BUTTON1_MASK);
-				
-				//ITAU
-//				celso.mouseMove(63, 105);
-//				celso.mousePress(InputEvent.BUTTON1_MASK);
-//				celso.mouseRelease(InputEvent.BUTTON1_MASK);
-				
-				celso.keyPress(KeyEvent.VK_KP_DOWN);
-				celso.keyRelease(KeyEvent.VK_KP_DOWN);
-				celso.keyPress(KeyEvent.VK_ENTER);
-				celso.keyRelease(KeyEvent.VK_ENTER);
-				
+
+				// ITAU
+				celso.mouseMove(63, 105);
+				celso.mousePress(InputEvent.BUTTON1_MASK);
+				celso.mouseRelease(InputEvent.BUTTON1_MASK);
+
 				celso.mouseMove(63, 130);
 				celso.mousePress(InputEvent.BUTTON1_MASK);
 				celso.mouseRelease(InputEvent.BUTTON1_MASK);
-				
-				SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM");
-				
-				escreverNoTeclado(celso, "C:/Users/suport/Desktop/Remessas/Remessa itau/Retorno/CN"+dateFormat.parse(dataRemessa).toString()+"7A");
 
-				
-				
+				File file = new File("C:/Users/suport/Desktop/Remessas/Remessa itau/Retorno/");
+				File[] files = file.listFiles();
+				File lastModified = files[0];
+				System.out.println("\n==== Identificando ultima remessa ====");
+				for (int i = 0; i < files.length; i++) {
+					if (lastModified.lastModified() < files[i].lastModified()) {
+						lastModified = files[i];
+					}
+				}
+
+				escreverNoTeclado(celso,
+						"//tsclient/C/Users/suport/Desktop/Remessas/Remessa itau/Retorno/" + lastModified.getName());
+
+				celso.mouseMove(686, 143);
+				celso.mousePress(InputEvent.BUTTON1_MASK);
+				celso.mouseRelease(InputEvent.BUTTON1_MASK);
+
+				loading(celso, new Color(96, 54, 0), "");
+
+				celso.mouseMove(1236, 598);
+				celso.mousePress(InputEvent.BUTTON1_MASK);
+				celso.mouseRelease(InputEvent.BUTTON1_MASK);
+
+				Color entrada = new Color(192, 220, 192);
+				Color liquido = new Color(185, 209, 234);
+
+				for (int i = 144; i <= 244; i++) {
+					Color cor = celso.getPixelColor(i, 256);
+					System.out.println("Cor = " + cor.getRed() + ", " + cor.getGreen() + ", " + cor.getBlue());
+					if (cor.getRGB() == entrada.getRGB() || cor.getRGB() == liquido.getRGB()) {
+						System.out.println("==== Possui boleto(s) ====");
+						celso.mouseMove(752, 110);
+
+						celso.mousePress(InputEvent.BUTTON1_MASK);
+						celso.mouseRelease(InputEvent.BUTTON1_MASK);
+
+						celso.keyPress(KeyEvent.VK_ENTER);
+						celso.keyPress(KeyEvent.VK_ENTER);
+						celso.keyPress(KeyEvent.VK_ENTER);
+
+						break;
+					} else if (i == 244) {
+						System.out.println("==== Não fio encontrado nenhum boleto, tente mais tarde ! ====");
+						criarLog.GerarLog("==== Não fio encontrado nenhum boleto, tente mais tarde ! ====");
+						Thread.sleep(4000);
+						process.destroy();
+					}
+				}
+				criarLog.GerarLog("==== Gerado ! ====");
+
 			} finally {
 				Thread.sleep(4000);
 				process.destroy();
+				criarLog.Salvar();
 			}
 		}
-		public void escreverNoTeclado(Robot bot, String st)
-				throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+
+		public static boolean isUpperCase(String string) {
+			return string.toUpperCase().equals(string);
+		}
+
+		public void escreverNoTeclado(Robot bot, String st) throws Exception {
 			String upperCase = st.toUpperCase();
-			bot.setAutoDelay(100);
+			bot.setAutoDelay(80);
 			for (int i = 0; i < upperCase.length(); i++) {
 				String letter = Character.toString(upperCase.charAt(i));
-				String code = "VK_" + letter;
-				if(letter == ":"){
-					code = "VK_COLON";
-				}else if(letter == "/"){
-					code = "VK_BRACELEFT";
+				if (letter.contains(":")) {
+					bot.keyPress(KeyEvent.VK_SHIFT);
+					bot.keyPress(KeyEvent.VK_SEMICOLON);
+					bot.keyRelease(KeyEvent.VK_SEMICOLON);
+					bot.keyRelease(KeyEvent.VK_SHIFT);
+					letter = "";
+				} else if (letter.contains("/")) {
+					alt(bot, KeyEvent.VK_NUMPAD0, KeyEvent.VK_NUMPAD0, KeyEvent.VK_NUMPAD9, KeyEvent.VK_NUMPAD2);
+					letter = "";
+				} else if (letter.contains(" ")) {
+					bot.keyPress(KeyEvent.VK_SPACE);
+					bot.keyRelease(KeyEvent.VK_SPACE);
+					letter = "";
+				} else if (letter.contains(".")) {
+					bot.keyPress(KeyEvent.VK_PERIOD);
+					bot.keyRelease(KeyEvent.VK_PERIOD);
+					letter = "";
 				}
-
-				Field f = KeyEvent.class.getField(code);
-				int keyEvent = f.getInt(null);
-
-				bot.keyPress(keyEvent);
-				bot.keyRelease(keyEvent);
+				String code = "VK_" + letter;
+				if (!letter.isEmpty()) {
+					Field f = KeyEvent.class.getField(code);
+					int keyEvent = f.getInt(null);
+					bot.keyPress(keyEvent);
+					bot.keyRelease(keyEvent);
+				}
 			}
-			bot.setAutoDelay(500);
+			bot.setAutoDelay(400);
 		}
 
 		public int[] stringParaIntFloat(String v) {
@@ -294,6 +361,26 @@ public class EnviarRetorno {
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}
+		}
+
+		public static void alt(Robot bot, int event1, int event2, int event3, int event4) throws Exception {
+
+			bot.keyPress(KeyEvent.VK_ALT);
+
+			bot.keyPress(event1);
+			bot.keyRelease(event1);
+
+			bot.keyPress(event2);
+			bot.keyRelease(event2);
+
+			bot.keyPress(event3);
+			bot.keyRelease(event3);
+
+			bot.keyPress(event4);
+			bot.keyRelease(event4);
+
+			bot.keyRelease(KeyEvent.VK_ALT);
+
 		}
 
 	}

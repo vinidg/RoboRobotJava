@@ -11,13 +11,13 @@ import java.util.Date;
 
 public class CriarRemessa {
 
-	public void main(String[] args) throws IOException, InterruptedException, AWTException,
+	public static void main(String[] args) throws IOException, InterruptedException, AWTException,
 			IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 		Acessar acessar = new Acessar();
 		acessar.sistemas();
 	}
 
-	public class Acessar {
+	public static class Acessar {
 		public void sistemas() throws IOException, InterruptedException, AWTException, IllegalArgumentException,
 				IllegalAccessException, NoSuchFieldException, SecurityException {
 
@@ -25,6 +25,7 @@ public class CriarRemessa {
 			Robot celso = new Robot();
 			Runtime runTime = Runtime.getRuntime();
 			celso.setAutoDelay(500);
+			CriarLog criarLog = new CriarLog();
 
 			try {
 
@@ -58,6 +59,7 @@ public class CriarRemessa {
 							break;
 						} else if (y == 700) {
 							System.out.println("\n==== Icone não encontrado ====");
+							criarLog.GerarLog("==== Icone não encontrado ====");
 							process.destroy();
 							return;
 						}
@@ -152,14 +154,18 @@ public class CriarRemessa {
 
 						break;
 					} else if (i == 244) {
-						System.out.println("==== Não fio encontrado nenhum boleto, tente mais tarde ! ====");
+						System.out.println("==== Não foi encontrado nenhum boleto, tente mais tarde ! ====");
 						Thread.sleep(4000);
 						process.destroy();
+						criarLog.GerarLog("==== Sem boleto ====");
 					}
 				}
+				criarLog.GerarLog("==== Sucesso ! ====");
 			} finally {
 				Thread.sleep(4000);
 				process.destroy();
+				criarLog.GerarLog("==== Finalizado ====");
+				criarLog.Salvar();
 			}
 		}
 
@@ -269,6 +275,7 @@ public class CriarRemessa {
 				}
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
+				
 			}
 		}
 	}
