@@ -9,7 +9,7 @@ public class CriarLog {
 
 	Calendar c = Calendar.getInstance();
 	Date date = c.getTime();
-	SimpleDateFormat dt1 = new SimpleDateFormat("dd/MM/yyyy_HH:mm:ss");
+	SimpleDateFormat dt1 = new SimpleDateFormat("dd_MM_yyyy_HH:mm:ss");
 	
 	String data = dt1.format(date);
 	

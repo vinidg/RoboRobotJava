@@ -81,7 +81,7 @@ public class EnviarRetorno {
 
 	public static class AcessarSistema {
 		public void sistemas(String dataRemessa) throws Exception {
-			
+
 			CriarLog criarLog = new CriarLog();
 			Process process = null;
 			Robot celso = new Robot();
@@ -90,7 +90,7 @@ public class EnviarRetorno {
 
 			try {
 
-				System.out.println("==== Abrindo área de trabalho remota ====");
+				System.out.println("==== Abrindo área de trabalho remota ====");	
 				process = runTime.exec("mstsc /f");
 
 				Thread.sleep(3000);
@@ -193,8 +193,7 @@ public class EnviarRetorno {
 				celso.mousePress(InputEvent.BUTTON1_MASK);
 				celso.mouseRelease(InputEvent.BUTTON1_MASK);
 
-				loading(celso, new Color(96, 54, 0), "");
-
+				Thread.sleep(3000);
 				celso.mouseMove(1236, 598);
 				celso.mousePress(InputEvent.BUTTON1_MASK);
 				celso.mouseRelease(InputEvent.BUTTON1_MASK);
@@ -218,8 +217,8 @@ public class EnviarRetorno {
 
 						break;
 					} else if (i == 244) {
-						System.out.println("==== Não fio encontrado nenhum boleto, tente mais tarde ! ====");
-						criarLog.GerarLog("==== Não fio encontrado nenhum boleto, tente mais tarde ! ====");
+						System.out.println("==== Não foi encontrado nenhum boleto, tente mais tarde ! ====");
+						criarLog.GerarLog("==== Não foi encontrado nenhum boleto, tente mais tarde ! ====");
 						Thread.sleep(4000);
 						process.destroy();
 					}
