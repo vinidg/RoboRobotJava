@@ -149,6 +149,7 @@ public class CriarRemessa {
 
 						celso.keyPress(KeyEvent.VK_ENTER);
 						celso.keyPress(KeyEvent.VK_ENTER);
+
 						celso.keyPress(KeyEvent.VK_ENTER);
 						celso.keyPress(KeyEvent.VK_ENTER);
 
