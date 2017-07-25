@@ -201,11 +201,11 @@ public class EnviarRetorno {
 				Color entrada = new Color(192, 220, 192);
 				Color liquido = new Color(166, 202, 240);
 				// TODO Aprimorar fazendo com que o cursor vá da esquerda pra direita, de cima para baixo
-				
+				int j = 25;
 				for (int i = 187; i <= 280; i++) {
-					Color cor = celso.getPixelColor(256, i);
+					Color cor = celso.getPixelColor(j, i);
 					System.out.println("Cor = " + cor.getRed() + ", " + cor.getGreen() + ", " + cor.getBlue());
-					celso.mouseMove(256, i);
+					celso.mouseMove(j, i);
 					if (cor.getRGB() == entrada.getRGB() || cor.getRGB() == liquido.getRGB()) {
 						System.out.println("==== Possui boleto(s) ====");
 						celso.mouseMove(752, 110);
@@ -223,13 +223,14 @@ public class EnviarRetorno {
 						System.out.println("==== Não foi encontrado nenhum boleto, tente mais tarde ! ====");
 						Thread.sleep(4000);
 					}
-				}
+					j++;
+					}
 				criarLog.GerarLog("==== Gerado ! ====");
 
 			} finally {
 				Thread.sleep(4000);
-				process.destroy();
 				criarLog.Salvar();
+				process.destroy();
 			}
 		}
 

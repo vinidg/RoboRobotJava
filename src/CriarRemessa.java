@@ -114,9 +114,10 @@ public class CriarRemessa {
 				celso.mouseRelease(InputEvent.BUTTON1_MASK);
 
 				Calendar c = Calendar.getInstance();
+				c.add( Calendar.MONTH , 1);
 				Date date = c.getTime();
 				SimpleDateFormat dt1 = new SimpleDateFormat("ddMMyyyy");
-
+				
 				escreverNumeros(celso, stringParaIntFloat(dt1.format(date)));
 
 				celso.mouseMove(175, 152);
